@@ -26,7 +26,7 @@ class CreateSessionRequestTest extends TestCase
 
     public function testEndpoint()
     {
-        $this->assertSame('https://api.payway.com.au/rest/v1/single-use-tokens', $this->request->getEndpoint());
+        $this->assertSame('https://api.windcave.com.au/rest/v1/single-use-tokens', $this->request->getEndpoint());
     }
 
     /**

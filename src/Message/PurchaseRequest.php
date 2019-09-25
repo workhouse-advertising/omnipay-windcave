@@ -7,7 +7,7 @@ use Money\Formatter\DecimalMoneyFormatter;
 use Money\Money;
 
 /**
- * @link https://www.payway.com.au/rest-docs/index.html#process-a-payment
+ * @link https://www.windcave.com.au/rest-docs/index.html#process-a-payment
  */
 class PurchaseRequest extends AbstractRequest
 {
@@ -19,39 +19,27 @@ class PurchaseRequest extends AbstractRequest
             'currency'
         );
 
+        if (!$this->getParameter('card')) {
+            throw new InvalidRequestException('You must pass a "card" parameter.');
+        }
+
+        $this->getCard()->validate();
+
+        // TODO
         $data = [
-            'customerNumber'  => $this->getCustomerNumber(),
-            'transactionType' => 'payment',
-            'currency'        => $this->getCurrency(),
+            'CardNumber' => '',
+            'ExpiryMonth' => 'MM',
+            'ExpiryYear' => 'YY',
+            'CardHolderName' => '',
+            'Cvc2' => '',
         ];
-
-        // Has the Money class been used to set the amount?
-        if ($this->getAmount() instanceof Money) {
-            // Ensure principal amount is formatted as decimal string
-            $data['principalAmount'] = (new DecimalMoneyFormatter(new ISOCurrencies()))->format($this->getAmount());
-        } else {
-            $data['principalAmount'] = $this->getAmount();
-        }
-
-        if ($this->getOrderNumber()) {
-            $data['orderNumber'] = $this->getOrderNumber();
-        }
-        if ($this->getUsername()) {
-            $data['username'] = $this->getUsername();
-        }
-        if ($this->getSessionId()){
-            $data['sessionId'] = $this->getSessionId();
-        }
-        if ($this->getCustomerIpAddress()){
-            $data['customerIpAddress'] = $this->getCustomerIpAddress();
-        }
 
         return $data;
     }
 
     public function getEndpoint()
     {
-        return $this->endpoint . '/transactions';
+        return $this->baseEndpoint() . '/transactions';
     }
 
     public function getHttpMethod()
@@ -59,8 +47,8 @@ class PurchaseRequest extends AbstractRequest
         return 'POST';
     }
 
-    public function getUseSecretKey()
+    public function getContentType()
     {
-        return true;
+        return 'multipart/form-data';
     }
 }

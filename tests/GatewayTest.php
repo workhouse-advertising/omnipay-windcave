@@ -62,7 +62,6 @@ class GatewayTest extends GatewayTestCase
 
         $data = $request->getData();
 
-        $this->assertEquals('payment', $data['transactionType']);
         $this->assertEquals('10.00',   $data['principalAmount']);
         $this->assertEquals('aud',     $data['currency']);
         $this->assertEquals('ABC123',  $data['customerNumber']);
@@ -89,7 +88,6 @@ class GatewayTest extends GatewayTestCase
 
         $data = $request->getData();
 
-        $this->assertEquals('payment', $data['transactionType']);
         $this->assertEquals('10.00',   $data['principalAmount']);
         $this->assertEquals('aud',     $data['currency']);
         $this->assertEquals('ABC123',  $data['customerNumber']);

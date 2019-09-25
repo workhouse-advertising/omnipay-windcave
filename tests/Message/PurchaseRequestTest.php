@@ -28,7 +28,6 @@ class PurchaseRequestTest extends TestCase
 
         $data = $this->request->getData();
 
-        $this->assertEquals('payment', $data['transactionType']);
         $this->assertEquals('10.00',   $data['principalAmount']);
         $this->assertEquals('usd',     $data['currency']);
         $this->assertEquals('ABC123',  $data['customerNumber']);

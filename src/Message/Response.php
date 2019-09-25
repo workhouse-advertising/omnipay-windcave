@@ -9,12 +9,8 @@ use Omnipay\Common\Message\AbstractResponse;
  */
 class Response extends AbstractResponse
 {
-    /** @var string Request ID */
-    protected $requestId = null;
     /** @var string HTTP response code */
     protected $httpResponseCode = null;
-    /** @var string Transaction type */
-    protected $transactionType = null;
 
     /**
      * Is the transaction successful?
@@ -29,11 +25,10 @@ class Response extends AbstractResponse
             return true;
         }
 
+        // TODO check response codes
+
         if ($code === 201) {   // Created
-            if ($this->getTransactionType() === 'payment') {
-                return $this->isApproved();
-            }
-            return true;
+            return $this->isApproved();
         }
 
         if ($code === 202 && $this->isPending()) {   // Accepted
@@ -49,10 +44,8 @@ class Response extends AbstractResponse
      */
     public function isApproved()
     {
-        return in_array($this->getStatus(), array(
-            'approved',
-            'approved*',
-        ));
+        // TODO
+        return false;
     }
 
     /**
@@ -61,10 +54,8 @@ class Response extends AbstractResponse
      */
     public function isPending()
     {
-        return (
-            $this->getTransactionType() === 'payment'
-            && $this->getStatus() === 'pending'
-        );
+        // TODO
+        return false;
     }
 
     /**
@@ -73,34 +64,18 @@ class Response extends AbstractResponse
      */
     public function getTransactionId()
     {
-        return $this->getData('transactionId');
+        // TODO
+        return null;
     }
 
     /**
      * Get Transaction reference
-     * @return string Payway transaction reference
+     * @return string Windcave transaction reference
      */
     public function getTransactionReference()
     {
-        return $this->getData('receiptNumber');
-    }
-
-    /**
-     * Get Customer Number
-     * @return string|null
-     */
-    public function getCustomerNumber()
-    {
-        return $this->getData('customerNumber');
-    }
-
-    /**
-     * Get Contact details
-     * @return array Customer contact
-     */
-    public function getContact()
-    {
-        return $this->getData('contact');
+        // TODO
+        return null;
     }
 
     /**
@@ -109,7 +84,8 @@ class Response extends AbstractResponse
      */
     public function getStatus()
     {
-        return $this->getData('status');
+        // TODO
+        return null;
     }
 
     /**
@@ -135,12 +111,8 @@ class Response extends AbstractResponse
         if ($this->isSuccessful()) {
             return null;
         }
-        // get error data (array in data)
-        $data = isset($this->getData('data')[0]) ? $this->getData('data')[0] : null;
-        if ($key) {
-            return isset($data[$key]) ? $data[$key] : null;
-        }
-        return $data;
+        // TODO
+        return null;
     }
 
     /**
@@ -149,15 +121,8 @@ class Response extends AbstractResponse
      */
     public function getMessage()
     {
-        if ($this->getErrorMessage()) {
-            return $this->getErrorMessage() . ' (' . $this->getErrorFieldName() . ')';
-        }
-
-        if ($this->isSuccessful()) {
-            return ($this->getStatus()) ? ucfirst($this->getStatus()) : 'Successful';
-        }
-        // default to unsuccessful message
-        return 'The transaction was unsuccessful.';
+        // TODO
+        return null;
     }
 
     /**
@@ -166,74 +131,28 @@ class Response extends AbstractResponse
      */
     public function getCode()
     {
-        return join(' ', [
-            $this->getResponseCode(),
-            $this->getResponseText(),
-            '(' . $this->getHttpResponseCode(),
-            $this->getHttpResponseCodeText() . ')',
-        ]);
+        // TODO
+        return null;
     }
 
     /**
-     * Get error message from the response
-     * @return string|null Error message or null if successful
-     */
-    public function getErrorMessage()
-    {
-        return $this->getErrorData('message');
-    }
-
-    /**
-     * Get field name in error from the response
-     * @return string|null Error message or null if successful
-     */
-    public function getErrorFieldName()
-    {
-        return $this->getErrorData('fieldName');
-    }
-
-    /**
-     * Get field value in error from the response
-     * @return string|null Error message or null if successful
-     */
-    public function getErrorFieldValue()
-    {
-        return $this->getErrorData('fieldValue');
-    }
-
-    /**
-     * Get Payway Response Code
+     * Get Windcave Response Code
      * @return string Returned response code
      */
     public function getResponseCode()
     {
+        // TODO check
         return $this->getData('responseCode');
     }
 
     /**
-     * Get Payway Response Text
+     * Get Windcave Response Text
      * @return string Returned response Text
      */
     public function getResponseText()
     {
+        // TODO check
         return $this->getData('responseText');
-    }
-
-    /**
-     * @return string
-     */
-    public function getRequestId()
-    {
-        return $this->requestId;
-    }
-
-    /**
-     * Set request id
-     * @return AbstractRequest provides a fluent interface.
-     */
-    public function setRequestId($requestId)
-    {
-        $this->requestId = $requestId;
     }
 
     /**
@@ -264,50 +183,5 @@ class Response extends AbstractResponse
         $statusTexts = \Symfony\Component\HttpFoundation\Response::$statusTexts;
 
         return (isset($statusTexts[$code])) ? $statusTexts[$code] : null;
-    }
-
-    /**
-     * Get transaction type
-     * @return string|null Transaction type
-     */
-    public function getTransactionType()
-    {
-        return $this->getData('transactionType');
-    }
-
-    /**
-     * Get payment method
-     * @return string|null Payment method
-     */
-    public function getPaymentMethod()
-    {
-        return $this->getData('paymentMethod');
-    }
-
-    /**
-     * Get credit card information
-     * @return string|null Transaction credit card details
-     */
-    public function getCreditCard()
-    {
-        return $this->getData('creditCard');
-    }
-
-    /**
-     * Get bank account information
-     * @return string|null Transaction bank account details
-     */
-    public function getBankAccount()
-    {
-        return $this->getData('bankAccount');
-    }
-
-    /**
-     * Set Transaction Type
-     * @return string|null Transaction type
-     */
-    public function setTransactionType($value)
-    {
-        return $this->transactionType = $value;
     }
 }

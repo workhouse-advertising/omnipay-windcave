@@ -9,10 +9,21 @@ use Omnipay\Common\Exception\InvalidRequestException;
  */
 class CreateSessionRequest extends AbstractRequest
 {
+    /**
+     * @return array|mixed
+     * @throws InvalidRequestException
+     */
     public function getData()
     {
         return [
-
+            'type' => 'purchase',
+            'amount' => $this->getAmount(),
+            'currency' => $this->getCurrency(),
+            'merchantReference' => $this->getMerchantReference(),
+            'storeCard' => 0,
+            'callbackUrls' => [
+                'approved' => 'http://ptsv2.com/t/4jita-1569373433/post'
+            ],
         ];
     }
 
@@ -27,5 +38,10 @@ class CreateSessionRequest extends AbstractRequest
     public function getHttpMethod()
     {
         return 'POST';
+    }
+
+    public function getContentType()
+    {
+        return 'application/json';
     }
 }

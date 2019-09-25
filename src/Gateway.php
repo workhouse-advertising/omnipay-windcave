@@ -37,7 +37,7 @@ class Gateway extends AbstractGateway
      */
     public function getName()
     {
-        return 'Westpac PayWay REST API';
+        return 'Windcave REST API';
     }
 
     /**
@@ -49,14 +49,13 @@ class Gateway extends AbstractGateway
      */
     public function getShortName()
     {
-        return 'PayWay';
+        return 'Windcave';
     }
 
     public function getDefaultParameters()
     {
         return array(
             'apiKey' => '',
-            'apiKeySecret' => '',
             'username'   => '',
         );
     }
@@ -80,24 +79,6 @@ class Gateway extends AbstractGateway
     }
 
     /**
-     * Get API secret key
-     * @return string
-     */
-    public function getApiKeySecret()
-    {
-        return $this->getParameter('apiKeySecret');
-    }
-
-    /**
-     * Set API secret key
-     * @param  string $value API secret key
-     */
-    public function setApiKeySecret($value)
-    {
-        return $this->setParameter('apiKeySecret', $value);
-    }
-
-    /**
      * Get Merchant
      * @return string Merchant ID
      */
@@ -113,14 +94,6 @@ class Gateway extends AbstractGateway
     public function setUsername($value)
     {
         return $this->setParameter('username', $value);
-    }
-
-    /**
-     * @return bool
-     */
-    public function getUseSecretKey()
-    {
-        return false;
     }
 
     /**

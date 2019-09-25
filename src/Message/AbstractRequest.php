@@ -3,7 +3,7 @@
 namespace Omnipay\Windcave\Message;
 
 /**
- * @link https://www.payway.com.au/rest-docs/index.html
+ * @link https://www.windcave.com.au/rest-docs/index.html
  */
 abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 {
@@ -14,7 +14,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
     protected function baseEndpoint()
     {
-
+        return str_replace('{{environment}}', $this->getTestMode() ? 'uat' : 'sec', $this->endpoint);
     }
 
     /**
@@ -83,7 +83,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
     public function getCurrency()
     {
-        // PayWay expects lowercase currency values
+        // Windcave expects lowercase currency values
         return ($this->getParameter('currency'))
             ? strtolower($this->getParameter('currency'))
             : null;
@@ -92,6 +92,23 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     public function setCurrency($value)
     {
         return $this->setParameter('currency', $value);
+    }
+
+    public function getMerchantReference()
+    {
+        return $this->getParameter('merchantReference');
+    }
+
+    public function setMerchantReference($value)
+    {
+        return $this->setParameter('merchantReference', $value);
+    }
+
+    abstract public function getContentType();
+
+    public function setContentType($value)
+    {
+        return $this->setParameter('contentType', $value);
     }
 
     /**
@@ -112,7 +129,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         // common headers
         $headers = array(
             'Accept' => 'application/json',
-            'Content-Type' => 'application/json',
+            'Content-Type' => $this->getContentType(),
         );
 
         return $headers;
@@ -147,7 +164,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
         // save additional info
         $this->response->setHttpResponseCode($response->getStatusCode());
-        $this->response->setTransactionType($this->getTransactionType());
 
         return $this->response;
     }
