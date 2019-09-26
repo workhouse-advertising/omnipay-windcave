@@ -3,8 +3,9 @@
 namespace Omnipay\Windcave\Message;
 
 use Omnipay\Common\Exception\InvalidRequestException;
+use Omnipay\Common\Message\RequestInterface;
 
-class PurchaseRequest extends AbstractRequest
+class PurchaseRequest extends AbstractRequest implements RequestInterface
 {
     public function getData()
     {

@@ -2,10 +2,12 @@
 
 namespace Omnipay\Windcave\Message;
 
+use Omnipay\Common\Message\RequestInterface;
+
 /**
  * @link https://px5.docs.apiary.io/#reference/0/sessions/query-session
  */
-class GetSessionRequest extends AbstractRequest
+class GetSessionRequest extends AbstractRequest implements RequestInterface
 {
     public function getSessionId()
     {
