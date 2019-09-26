@@ -1,60 +1,44 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: pedro
- * Date: 18/06/17
- * Time: 21:30
- */
 
 namespace Omnipay\Windcave\Test\Message;
 
+use Money\Currency;
+use Money\Money;
 use Omnipay\Tests\TestCase;
 use Omnipay\Windcave\Message\CreateSessionRequest;
 
 class CreateSessionRequestTest extends TestCase
 {
     /**
-     * @var CreateSessionRequest $request
+     * @var \Omnipay\Windcave\Message\CreateSessionRequest
      */
-    private $request;
+    protected $request;
 
     public function setUp()
     {
-        parent::setUp();
         $this->request = new CreateSessionRequest($this->getHttpClient(), $this->getHttpRequest());
+
+        $this->request->setMoney(new Money(1000, new Currency('NZD')));
     }
 
     public function testEndpoint()
     {
-        $this->assertSame('https://api.windcave.com.au/rest/v1/single-use-tokens', $this->request->getEndpoint());
+        $this->request->setTestMode(true);
+        $this->assertSame('https://uat.windcave.com/api/v1/sessions', $this->request->getEndpoint());
+        $this->request->setTestMode(false);
+        $this->assertSame('https://sec.windcave.com/api/v1/sessions', $this->request->getEndpoint());
     }
 
-    /**
-     * @expectedException \Omnipay\Common\Exception\InvalidRequestException
-     * @expectedExceptionMessage You must pass a "card" parameter.
-     */
-    public function testGetDataInvalid()
+    public function testGetData()
     {
-        $this->request->setCard(null);
-
-        $this->request->getData();
-    }
-
-    public function testGetDataWithCard()
-    {
-        $card = $this->getValidCard();
-        $this->request->setCard($card);
+        $this->request->setMerchantReference('ABC123');
 
         $data = $this->request->getData();
 
-        $expiryMonth = sprintf('%02d', $card['expiryMonth']);
-        $name = $card['firstName'] . ' ' . $card['lastName'];
-
-        $this->assertEquals('creditCard',        $data['paymentMethod']);
-        $this->assertEquals($card['number'],     $data['cardNumber']);
-        $this->assertEquals($name,               $data['cardholderName']);
-        $this->assertEquals($card['cvv'],        $data['cvn']);
-        $this->assertEquals($expiryMonth,        $data['expiryDateMonth']);
-        $this->assertEquals($card['expiryYear'], $data['expiryDateYear']);
+        $this->assertEquals('purchase', $data['type']);
+        $this->assertEquals('10.00',    $data['amount']);
+        $this->assertEquals('NZD',      $data['currency']);
+        $this->assertEquals('ABC123',   $data['merchantReference']);
+        $this->assertEquals(0,          $data['storeCard']);
     }
 }

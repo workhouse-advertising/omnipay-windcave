@@ -2,44 +2,38 @@
 
 namespace Omnipay\Windcave\Message;
 
-use Money\Currencies\ISOCurrencies;
-use Money\Formatter\DecimalMoneyFormatter;
-use Money\Money;
+use Omnipay\Common\Exception\InvalidRequestException;
 
-/**
- * @link https://www.windcave.com.au/rest-docs/index.html#process-a-payment
- */
 class PurchaseRequest extends AbstractRequest
 {
     public function getData()
     {
-        $this->validate(
-            'customerNumber',
-            'amount',
-            'currency'
-        );
-
         if (!$this->getParameter('card')) {
             throw new InvalidRequestException('You must pass a "card" parameter.');
         }
 
         $this->getCard()->validate();
 
-        // TODO
-        $data = [
-            'CardNumber' => '',
-            'ExpiryMonth' => 'MM',
-            'ExpiryYear' => 'YY',
-            'CardHolderName' => '',
-            'Cvc2' => '',
-        ];
+        $expiryMonth = str_pad($this->getCard()->getExpiryMonth(), 2, 0, STR_PAD_LEFT);
+        $expiryYear = substr($this->getCard()->getExpiryYear(), -2);
 
-        return $data;
+        return [
+            'CardNumber' => $this->getCard()->getNumber(),
+            'ExpiryMonth' => $expiryMonth,
+            'ExpiryYear' => $expiryYear,
+            'CardHolderName' => $this->getCard()->getName(),
+            'Cvc2' => $this->getCard()->getCvv(),
+        ];
     }
 
     public function getEndpoint()
     {
-        return $this->baseEndpoint() . '/transactions';
+        return $this->getParameter('endpoint');
+    }
+
+    public function setEndpoint($value)
+    {
+        $this->setParameter('endpoint', $value);
     }
 
     public function getHttpMethod()
@@ -50,5 +44,15 @@ class PurchaseRequest extends AbstractRequest
     public function getContentType()
     {
         return 'multipart/form-data';
+    }
+
+    protected function wantsJson()
+    {
+        return false;
+    }
+
+    public function getResponseClass()
+    {
+        return PurchaseResponse::class;
     }
 }

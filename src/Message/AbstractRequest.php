@@ -11,10 +11,16 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     protected $endpoint = 'https://{{environment}}.windcave.com/api/v1';
 
     abstract public function getEndpoint();
+    abstract public function getResponseClass();
 
     protected function baseEndpoint()
     {
         return str_replace('{{environment}}', $this->getTestMode() ? 'uat' : 'sec', $this->endpoint);
+    }
+
+    protected function wantsJson()
+    {
+        return true;
     }
 
     /**
@@ -53,24 +59,6 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         return $this->setParameter('username', $value);
     }
 
-    /**
-     * Get single-use token
-     * @return string Token key
-     */
-    public function getSessionId()
-    {
-        return $this->getParameter('sessionId');
-    }
-
-    /**
-     * Set single-use token
-     * @param  string $value Token Key
-     */
-    public function setSessionId($value)
-    {
-        return $this->setParameter('sessionId', $value);
-    }
-
     public function getAmount()
     {
         return $this->getParameter('amount');
@@ -83,10 +71,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
 
     public function getCurrency()
     {
-        // Windcave expects lowercase currency values
-        return ($this->getParameter('currency'))
-            ? strtolower($this->getParameter('currency'))
-            : null;
+        return $this->getParameter('currency');
     }
 
     public function setCurrency($value)
@@ -128,9 +113,12 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     {
         // common headers
         $headers = array(
-            'Accept' => 'application/json',
             'Content-Type' => $this->getContentType(),
         );
+
+        if ($this->wantsJson()) {
+            $headers['Accept'] = 'application/json';
+        }
 
         return $headers;
     }
@@ -156,14 +144,23 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
             $this->getHttpMethod(),
             $this->getEndpoint(),
             $headers,
-            $body,
-            '1.2' // Enforce TLS v1.2
+            $body
         );
 
-        $this->response = new Response($this, json_decode($response->getBody()->getContents(), true));
+        $responseClass = $this->getResponseClass();
+
+        $data = $response->getBody()->getContents();
+
+        if ($this->wantsJson()) {
+            $data = json_decode($data, true);
+        }
+
+        $this->response = new $responseClass($this, $data);
 
         // save additional info
         $this->response->setHttpResponseCode($response->getStatusCode());
+
+        $this->response->setHeaders($response->getHeaders());
 
         return $this->response;
     }

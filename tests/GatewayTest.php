@@ -9,6 +9,8 @@ use Money\Money;
 use Omnipay\Common\CreditCard;
 use Omnipay\Tests\GatewayTestCase;
 use Omnipay\Windcave\Gateway;
+use Omnipay\Windcave\Message\CreateSessionRequest;
+use Omnipay\Windcave\Message\PurchaseRequest;
 
 /**
  * @property Gateway gateway
@@ -23,9 +25,49 @@ class GatewayTest extends GatewayTestCase
         $this->gateway->setTestMode(true);
     }
 
-    public function testCreateToken()
+    public function testCreateSessionUsingStringAmount()
     {
         $request = $this->gateway->createSession([
+            'amount' => '10.00',
+            'currency' => 'AUD',
+            'merchantReference' => 'ABC123',
+        ]);
+
+        $this->assertInstanceOf(CreateSessionRequest::class, $request);
+        $this->assertSame('10.00', $request->getAmount());
+
+        $data = $request->getData();
+
+        $this->assertEquals('10.00',   $data['amount']);
+        $this->assertEquals('AUD',     $data['currency']);
+        $this->assertEquals('ABC123',  $data['merchantReference']);
+    }
+
+    public function testCreateSessionUsingMoney()
+    {
+        $request = $this->gateway->createSession([
+            'currency' => 'AUD',
+            'merchantReference' => 'ABC123',
+        ]);
+
+        $money = new Money(1000, new Currency('AUD'));
+
+        $request->setMoney($money);
+
+        $this->assertInstanceOf(CreateSessionRequest::class, $request);
+        $this->assertSame($money, $request->getAmount());
+        $this->assertSame('10.00', (new DecimalMoneyFormatter(new ISOCurrencies()))->format($request->getAmount()));
+
+        $data = $request->getData();
+
+        $this->assertEquals('10.00',   $data['amount']);
+        $this->assertEquals('AUD',     $data['currency']);
+        $this->assertEquals('ABC123',  $data['merchantReference']);
+    }
+
+    public function testPurchase()
+    {
+        $request = $this->gateway->purchase([
             'card' => new CreditCard([
                 'firstName' => 'John',
                 'lastName' => 'Doe',
@@ -36,62 +78,13 @@ class GatewayTest extends GatewayTestCase
             ]),
         ]);
 
-        $this->assertInstanceOf('Omnipay\Windcave\Message\CreateSessionRequest', $request);
+        $this->assertInstanceOf(PurchaseRequest::class, $request);
         $data = $request->getData();
 
-        $this->assertEquals('creditCard',           $data['paymentMethod']);
-        $this->assertEquals('424242424242',         $data['cardNumber']);
-        $this->assertEquals('John Doe',             $data['cardholderName']);
-        $this->assertEquals('123',                  $data['cvn']);
-        $this->assertEquals('03',                   $data['expiryDateMonth']);
-        $this->assertEquals('2020',                 $data['expiryDateYear']);
-    }
-
-    public function testPurchaseUsingStringAmount()
-    {
-        $request = $this->gateway->purchase([
-            'amount' => '10.00',
-            'currency' => 'AUD',
-            'customerNumber' => 'ABC123',
-            'orderNumber' => '456',
-            'sessionId' => 'EFG789',
-        ]);
-
-        $this->assertInstanceOf('Omnipay\Windcave\Message\PurchaseRequest', $request);
-        $this->assertSame('10.00', $request->getAmount());
-
-        $data = $request->getData();
-
-        $this->assertEquals('10.00',   $data['principalAmount']);
-        $this->assertEquals('aud',     $data['currency']);
-        $this->assertEquals('ABC123',  $data['customerNumber']);
-        $this->assertEquals('456',     $data['orderNumber']);
-        $this->assertEquals('EFG789',  $data['sessionId']);
-    }
-
-    public function testPurchaseUsingMoney()
-    {
-        $request = $this->gateway->purchase([
-            'currency' => 'AUD',
-            'customerNumber' => 'ABC123',
-            'orderNumber' => '456',
-            'sessionId' => 'EFG789',
-        ]);
-
-        $money = new Money(1000, new Currency('AUD'));
-
-        $request->setMoney($money);
-
-        $this->assertInstanceOf('Omnipay\Windcave\Message\PurchaseRequest', $request);
-        $this->assertSame($money, $request->getAmount());
-        $this->assertSame('10.00', (new DecimalMoneyFormatter(new ISOCurrencies()))->format($request->getAmount()));
-
-        $data = $request->getData();
-
-        $this->assertEquals('10.00',   $data['principalAmount']);
-        $this->assertEquals('aud',     $data['currency']);
-        $this->assertEquals('ABC123',  $data['customerNumber']);
-        $this->assertEquals('456',     $data['orderNumber']);
-        $this->assertEquals('EFG789',  $data['sessionId']);
+        $this->assertEquals('424242424242',         $data['CardNumber']);
+        $this->assertEquals('John Doe',             $data['CardHolderName']);
+        $this->assertEquals('123',                  $data['Cvc2']);
+        $this->assertEquals('03',                   $data['ExpiryMonth']);
+        $this->assertEquals('20',                   $data['ExpiryYear']);
     }
 }
