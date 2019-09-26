@@ -10,6 +10,7 @@ use Omnipay\Common\CreditCard;
 use Omnipay\Tests\GatewayTestCase;
 use Omnipay\Windcave\Gateway;
 use Omnipay\Windcave\Message\CreateSessionRequest;
+use Omnipay\Windcave\Message\GetSessionRequest;
 use Omnipay\Windcave\Message\PurchaseRequest;
 
 /**
@@ -63,6 +64,24 @@ class GatewayTest extends GatewayTestCase
         $this->assertEquals('10.00',   $data['amount']);
         $this->assertEquals('AUD',     $data['currency']);
         $this->assertEquals('ABC123',  $data['merchantReference']);
+    }
+
+    public function testGetSession()
+    {
+        $request = $this->gateway->getSession([
+            'sessionId' => 'SESS01234',
+        ]);
+
+        $this->assertInstanceOf(GetSessionRequest::class, $request);
+
+        $data = $request->getData();
+
+        $this->assertNull($data);
+
+        $request->setTestMode(true);
+        $this->assertSame('https://uat.windcave.com/api/v1/sessions/SESS01234', $request->getEndpoint());
+        $request->setTestMode(false);
+        $this->assertSame('https://sec.windcave.com/api/v1/sessions/SESS01234', $request->getEndpoint());
     }
 
     public function testPurchase()

@@ -4,6 +4,7 @@ namespace Omnipay\Windcave;
 
 use Omnipay\Common\AbstractGateway;
 use Omnipay\Windcave\Message\CreateSessionRequest;
+use Omnipay\Windcave\Message\GetSessionRequest;
 use Omnipay\Windcave\Message\PurchaseRequest;
 
 /**
@@ -116,5 +117,16 @@ class Gateway extends AbstractGateway
     public function createSession(array $parameters = array())
     {
         return $this->createRequest(CreateSessionRequest::class, $parameters);
+    }
+
+    /**
+     * Create sessionId with a CreditCard
+     *
+     * @param array $parameters
+     * @return \Omnipay\Windcave\Message\GetSessionRequest|\Omnipay\Common\Message\AbstractRequest
+     */
+    public function getSession(array $parameters = array())
+    {
+        return $this->createRequest(GetSessionRequest::class, $parameters);
     }
 }
