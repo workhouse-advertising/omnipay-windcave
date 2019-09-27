@@ -114,6 +114,7 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
         // common headers
         $headers = array(
             'Content-Type' => $this->getContentType(),
+            'User-Agent' => 'PostmanRuntime/7.17.1',
         );
 
         if ($this->wantsJson()) {
