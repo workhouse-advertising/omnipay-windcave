@@ -20,8 +20,8 @@ class PurchaseResponseTest extends TestCase
         $response = new PurchaseResponse($request, $responseBody);
         $response->setHttpResponseCode(302);
         $response->setHeaders([
-            'Content-Type' => 'text/html; charset=utf-8',
-            'Location' => 'http://example.com?status=approved&sessionId=00001100712231650b7aa766708118a5',
+            'Content-Type' => ['text/html; charset=utf-8'],
+            'Location' => ['http://example.com?status=approved&sessionId=00001100712231650b7aa766708118a5'],
         ]);
 
         $this->assertTrue($response->isSuccessful());
@@ -41,8 +41,8 @@ class PurchaseResponseTest extends TestCase
         $response = new PurchaseResponse($request, $responseBody);
         $response->setHttpResponseCode(302);
         $response->setHeaders([
-            'Content-Type' => 'text/html; charset=utf-8',
-            'Location' => 'http://example.com?status=declined&sessionId=00001100712231650b7aa766708118a5',
+            'Content-Type' => ['text/html; charset=utf-8'],
+            'Location' => ['http://example.com?status=declined&sessionId=00001100712231650b7aa766708118a5'],
         ]);
 
         $this->assertFalse($response->isSuccessful());

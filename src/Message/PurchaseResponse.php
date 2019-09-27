@@ -14,11 +14,11 @@ class PurchaseResponse extends AbstractResponse
     protected function getLocationAttribute($key)
     {
         $headers = $this->getHeaders();
-        if (empty($headers['Location'])) {
+        if (empty($headers['Location'][0])) {
             return null;
         }
 
-        $location = parse_url($headers['Location'], PHP_URL_QUERY);
+        $location = parse_url($headers['Location'][0], PHP_URL_QUERY);
         parse_str($location, $query);
 
         return isset($query[$key]) ? $query[$key] : null;
