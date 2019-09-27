@@ -33,4 +33,9 @@ class PurchaseResponse extends AbstractResponse
     {
         return $this->getLocationAttribute('sessionId');
     }
+
+    public function getMessage()
+    {
+        return $this->getStatus();
+    }
 }
