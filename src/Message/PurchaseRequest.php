@@ -20,11 +20,13 @@ class PurchaseRequest extends AbstractRequest implements RequestInterface
         $expiryYear = substr($this->getCard()->getExpiryYear(), -2);
 
         return new MultipartStream([
-            'CardNumber' => $this->getCard()->getNumber(),
-            'ExpiryMonth' => $expiryMonth,
-            'ExpiryYear' => $expiryYear,
-            'CardHolderName' => $this->getCard()->getName(),
-            'Cvc2' => $this->getCard()->getCvv(),
+            [
+                'CardNumber' => $this->getCard()->getNumber(),
+                'ExpiryMonth' => $expiryMonth,
+                'ExpiryYear' => $expiryYear,
+                'CardHolderName' => $this->getCard()->getName(),
+                'Cvc2' => $this->getCard()->getCvv(),
+            ],
         ]);
     }
 
