@@ -14,7 +14,7 @@ use Omnipay\Common\Message\RequestInterface;
 class CreateSessionRequest extends AbstractRequest implements RequestInterface
 {
     /**
-     * @return array|mixed
+     * @return string
      * @throws InvalidRequestException
      */
     public function getData()
@@ -39,7 +39,7 @@ class CreateSessionRequest extends AbstractRequest implements RequestInterface
             $data['amount'] = $this->getAmount();
         }
 
-        return $data;
+        return json_encode($data);
     }
 
     /**

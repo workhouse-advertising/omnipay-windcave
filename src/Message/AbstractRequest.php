@@ -127,19 +127,17 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     /**
      * Send data request
      *
-     * @param $data
+     * @param $body
      *
      * @return \Omnipay\Common\Message\ResponseInterface|\Omnipay\Windcave\Message\Response
      */
-    public function sendData($data)
+    public function sendData($body)
     {
         $username = $this->getUsername();
         $apiKey = $this->getApiKey();
 
         $headers = $this->getRequestHeaders();
         $headers['Authorization'] = 'Basic ' . base64_encode($username . ':' . $apiKey);
-
-        $body = $data ? json_encode($data) : null;
 
         $response = $this->httpClient->request(
             $this->getHttpMethod(),

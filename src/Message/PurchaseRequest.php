@@ -2,6 +2,7 @@
 
 namespace Omnipay\Windcave\Message;
 
+use GuzzleHttp\Psr7\MultipartStream;
 use Omnipay\Common\Exception\InvalidRequestException;
 use Omnipay\Common\Message\RequestInterface;
 
@@ -18,13 +19,13 @@ class PurchaseRequest extends AbstractRequest implements RequestInterface
         $expiryMonth = str_pad($this->getCard()->getExpiryMonth(), 2, 0, STR_PAD_LEFT);
         $expiryYear = substr($this->getCard()->getExpiryYear(), -2);
 
-        return [
+        return new MultipartStream([
             'CardNumber' => $this->getCard()->getNumber(),
             'ExpiryMonth' => $expiryMonth,
             'ExpiryYear' => $expiryYear,
             'CardHolderName' => $this->getCard()->getName(),
             'Cvc2' => $this->getCard()->getCvv(),
-        ];
+        ]);
     }
 
     public function getEndpoint()
