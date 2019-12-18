@@ -34,6 +34,11 @@ class GetSessionResponse extends AbstractResponse
         return $this->getTransactionData('reCo');
     }
 
+    public function getSettlementDate()
+    {
+        return $this->getTransactionData('settlementDate');
+    }
+
     public function getMessage()
     {
         if ($this->isSuccessful()) {
