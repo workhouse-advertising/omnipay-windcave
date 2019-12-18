@@ -22,7 +22,7 @@ class CreateSessionRequest extends AbstractRequest implements RequestInterface
         $data = [
             'type' => 'purchase',
             'currency' => $this->getCurrency(),
-            'merchantReference' => $this->getMerchantReference(),
+            'merchantReference' => substr($this->getMerchantReference(), 0, 64),
             'storeCard' => 0,
             'callbackUrls' => [
                 'approved' => 'http://example.com?status=approved',
