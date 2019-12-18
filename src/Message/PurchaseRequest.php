@@ -24,6 +24,7 @@ class PurchaseRequest extends AbstractRequest implements RequestInterface
             'ExpiryYear' => $expiryYear,
             'CardHolderName' => $this->getCard()->getName(),
             'Cvc2' => $this->getCard()->getCvv(),
+            'MerchantReference' => substr($this->getDescription(), 0, 64),
         ]);
     }
 
