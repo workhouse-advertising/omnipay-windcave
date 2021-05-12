@@ -21,15 +21,16 @@ class AbstractResponse extends \Omnipay\Common\Message\AbstractResponse
         // get response code
         $code = $this->getHttpResponseCode();
 
-        if ($code === 200) {  // OK
-            return true;
-        }
+        return ($code === 200 || $code === 201);
+    }
 
-        if ($code === 202) {   // Accepted
-            return true;
-        }
-
-        return false;
+    /**
+     * Is the transaction still processing? We will need to fetch it again
+     * @return bool
+     */
+    public function isPending()
+    {
+        return $this->getHttpResponseCode() === 202;
     }
 
     /**
