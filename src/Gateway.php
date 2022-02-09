@@ -58,6 +58,11 @@ class Gateway extends AbstractGateway
         return array(
             'apiKey' => '',
             'username'   => '',
+            'callbackUrls' => [
+                'approved' => 'http://example.com?status=approved',
+                'declined' => 'http://example.com?status=declined',
+                'cancelled' => 'http://example.com?status=cancelled',
+            ],
         );
     }
 
@@ -77,6 +82,24 @@ class Gateway extends AbstractGateway
     public function setApiKey($value)
     {
         return $this->setParameter('apiKey', $value);
+    }
+
+    /**
+     * Get Callback URLs associative array (approved, declined, cancelled)
+     * @return array
+     */
+    public function getCallbackUrls()
+    {
+        return $this->getParameter('callbackUrls');
+    }
+
+    /**
+     * Set Callback URLs associative array (approved, declined, cancelled)
+     * @param array $value
+     */
+    public function setCallbackUrls($value)
+    {
+        return $this->setParameter('callbackUrls', $value);
     }
 
     /**
