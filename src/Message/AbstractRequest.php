@@ -42,6 +42,24 @@ abstract class AbstractRequest extends \Omnipay\Common\Message\AbstractRequest
     }
 
     /**
+     * Get Callback URLs associative array (approved, declined, cancelled)
+     * @return array
+     */
+    public function getCallbackUrls()
+    {
+        return $this->getParameter('callbackUrls');
+    }
+
+    /**
+     * Set Callback URLs associative array (approved, declined, cancelled)
+     * @param array $value
+     */
+    public function setCallbackUrls($value)
+    {
+        return $this->setParameter('callbackUrls', $value);
+    }
+
+    /**
      * Get Merchant
      * @return string Merchant ID
      */

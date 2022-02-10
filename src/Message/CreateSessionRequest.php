@@ -24,11 +24,7 @@ class CreateSessionRequest extends AbstractRequest implements RequestInterface
             'currency' => $this->getCurrency(),
             'merchantReference' => substr($this->getMerchantReference(), 0, 64),
             'storeCard' => 0,
-            'callbackUrls' => [
-                'approved' => 'http://example.com?status=approved',
-                'declined' => 'http://example.com?status=declined',
-                'cancelled' => 'http://example.com?status=cancelled',
-            ],
+            'callbackUrls' => $this->getCallbackUrls(),
         ];
 
         // Has the Money class been used to set the amount?
