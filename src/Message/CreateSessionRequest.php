@@ -35,7 +35,89 @@ class CreateSessionRequest extends AbstractRequest implements RequestInterface
             $data['amount'] = $this->getAmount();
         }
 
+        // Add customer data so that risk management (such as 3DS) can be utilised.
+        if ($customer = $this->getCustomer()) {
+            $data['customer'] = $customer;
+        }
+
         return json_encode($data);
+    }
+
+    /**
+     * Get the customer data.
+     *
+     * @return array
+     */
+    protected function getCustomer() : array
+    {
+        $customer = [];
+        $card = $this->getCard();
+        if ($card) {
+            $customer = [
+                'firstName' => $card->getFirstName(),
+                'lastName' => $card->getLastName(),
+                'phoneNumber' => $card->getPhone(),
+                // TODO: Consider adding support for the `homePhoneNumber` and `account` fields.
+                // 'homePhoneNumber' => ???,
+                // 'account' => ???,
+                'email' => $card->getEmail(),
+                'billing' => $this->getBillingAddress(),
+                'shipping' => $this->getShippingAddress(),
+            ];
+        }
+        return $customer;
+    }
+
+    /**
+     * Get the billing address data.
+     *
+     * @return array
+     */
+    protected function getBillingAddress()
+    {
+        $billingAddress = [];
+        $card = $this->getCard();
+        if ($card) {
+            $billingAddress = [
+                'name' => $card->getBillingName(),
+                'address1' => $card->getBillingAddress1(),
+                'address2' => $card->getBillingAddress2(),
+                // TODO: Consider adding support for the `address3` field.
+                // 'address3' => ???,
+                'city' => $card->getBillingCity(),
+                'postalCode' => $card->getBillingPostCode(),
+                'state' => $card->getBillingState(),
+                'countryCode' => $card->getBillingCountry(),
+                'phoneNumber' => $card->getBillingPhone(),
+            ];
+        }
+        return $billingAddress;
+    }
+
+    /**
+     * Get the shipping address data.
+     *
+     * @return array
+     */
+    protected function getShippingAddress()
+    {
+        $shippingAddress = [];
+        $card = $this->getCard();
+        if ($card) {
+            $shippingAddress = [
+                'name' => $card->getShippingName(),
+                'address1' => $card->getShippingAddress1(),
+                'address2' => $card->getShippingAddress2(),
+                // TODO: Consider adding support for the `address3` field.
+                // 'address3' => ???,
+                'city' => $card->getShippingCity(),
+                'postalCode' => $card->getShippingPostCode(),
+                'state' => $card->getShippingState(),
+                'countryCode' => $card->getShippingCountry(),
+                'phoneNumber' => $card->getShippingPhone(),
+            ];
+        }
+        return $shippingAddress;
     }
 
     /**
