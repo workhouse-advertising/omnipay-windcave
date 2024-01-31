@@ -25,6 +25,8 @@ class CreateSessionRequest extends AbstractRequest implements RequestInterface
             'merchantReference' => substr($this->getMerchantReference(), 0, 64),
             'storeCard' => 0,
             'callbackUrls' => $this->getCallbackUrls(),
+            // Add customer data so that risk management (such as 3DS) can be utilised.
+            'customer' => $this->getCustomer(),
         ];
 
         // Has the Money class been used to set the amount?
@@ -35,22 +37,17 @@ class CreateSessionRequest extends AbstractRequest implements RequestInterface
             $data['amount'] = $this->getAmount();
         }
 
-        // Add customer data so that risk management (such as 3DS) can be utilised.
-        if ($customer = $this->getCustomer()) {
-            $data['customer'] = $customer;
-        }
-
         return json_encode($data);
     }
 
     /**
      * Get the customer data.
      *
-     * @return array
+     * @return array|null
      */
-    protected function getCustomer() : array
+    protected function getCustomer(): ?array
     {
-        $customer = [];
+        $customer = null;
         $card = $this->getCard();
         if ($card) {
             $customer = [
@@ -71,11 +68,11 @@ class CreateSessionRequest extends AbstractRequest implements RequestInterface
     /**
      * Get the billing address data.
      *
-     * @return array
+     * @return array|null
      */
-    protected function getBillingAddress()
+    protected function getBillingAddress(): ?array
     {
-        $billingAddress = [];
+        $billingAddress = null;
         $card = $this->getCard();
         if ($card) {
             $billingAddress = [
@@ -97,11 +94,11 @@ class CreateSessionRequest extends AbstractRequest implements RequestInterface
     /**
      * Get the shipping address data.
      *
-     * @return array
+     * @return array|null
      */
-    protected function getShippingAddress()
+    protected function getShippingAddress(): ?array
     {
-        $shippingAddress = [];
+        $shippingAddress = null;
         $card = $this->getCard();
         if ($card) {
             $shippingAddress = [
