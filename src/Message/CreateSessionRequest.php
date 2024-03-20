@@ -27,6 +27,7 @@ class CreateSessionRequest extends AbstractRequest implements RequestInterface
             'callbackUrls' => $this->getCallbackUrls(),
             // Add customer data so that risk management (such as 3DS) can be utilised.
             'customer' => $this->getCustomer(),
+            'metaData' => $this->getMetaData(),
         ];
 
         // Has the Money class been used to set the amount?
@@ -115,6 +116,26 @@ class CreateSessionRequest extends AbstractRequest implements RequestInterface
             ];
         }
         return $shippingAddress;
+    }
+
+    /**
+     * Get the meta data.
+     *
+     * @return array|null
+     */
+    public function getMetaData()
+    {
+        return $this->getParameter('metaData');
+    }
+
+    /**
+     * Set the meta data.
+     *
+     * @param array|null
+     */
+    public function setMetaData($value)
+    {
+        return $this->setParameter('metaData', $value);
     }
 
     /**
