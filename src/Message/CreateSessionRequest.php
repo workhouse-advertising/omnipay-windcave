@@ -30,6 +30,11 @@ class CreateSessionRequest extends AbstractRequest implements RequestInterface
             'metaData' => $this->getMetaData(),
         ];
 
+        // Add a notification URL for the Fail Proof Result Notification (FPRN) server-side service.
+        if ($this->getNotifyUrl()) {
+            $data['notificationUrl'] = $this->getNotifyUrl();
+        }
+
         // Has the Money class been used to set the amount?
         if ($this->getAmount() instanceof Money) {
             // Ensure principal amount is formatted as decimal string e.g. 50.00
